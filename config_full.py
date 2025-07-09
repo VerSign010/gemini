@@ -5,20 +5,20 @@ import os
 try:
     genai.configure(api_key=os.environ["AIzaSyDl1YHnyuf3CWLE-sYNo0T7cPHmLQ9whEw"])
 except KeyError:
-    print("´íÎó£ºÇëÉèÖÃÃûÎª GOOGLE_API_KEY µÄ»·¾³±äÁ¿¡£")
-    print("Äú¿ÉÒÔ´Ó Google AI Studio »ñÈ¡ÄúµÄAPIÃÜÔ¿: https://aistudio.google.com/app/api_keys")
+    print("é”™è¯¯ï¼šè¯·è®¾ç½®åä¸º GOOGLE_API_KEY çš„ç¯å¢ƒå˜é‡ã€‚")
+    print("æ‚¨å¯ä»¥ä» Google AI Studio è·å–æ‚¨çš„APIå¯†é’¥: https://aistudio.google.com/app/api_keys")
     exit()
 
-# --- 2. ¶¨ÒåÄ£ĞÍÔËĞĞ²ÎÊı (ÎÒÃÇ¹²Í¬È·Á¢µÄ×î¼ÑÉèÖÃ) ---
+# --- 2. å®šä¹‰æ¨¡å‹è¿è¡Œå‚æ•° (æˆ‘ä»¬å…±åŒç¡®ç«‹çš„æœ€ä½³è®¾ç½®) ---
 generation_config = {
-  "temperature": 0.2,      # µÍÎÂÒÔÈ·±£½á¹ûµÄ×¼È·ĞÔºÍÒ»ÖÂĞÔ
-  "top_p": 0.95,           # ²ÉÓÃTop-P²ÉÑù£¬±£Áô¸ßÖÊÁ¿µÄ´Ê»ãÑ¡Ôñ·¶Î§
-  "top_k": 0,              # ÉèÖÃÎª0£¬±íÊ¾²»Ê¹ÓÃTop-K²ÉÑù£¬ÈÃTop-PÖ÷µ¼
-  "max_output_tokens": 8192, # ÉèÖÃ×ã¹»¸ßµÄÊä³ö³¤¶È£¬·ÀÖ¹ÏêÏ¸·ÖÎö±»½Ø¶Ï
+  "temperature": 0.2,      # ä½æ¸©ä»¥ç¡®ä¿ç»“æœçš„å‡†ç¡®æ€§å’Œä¸€è‡´æ€§
+  "top_p": 0.95,           # é‡‡ç”¨Top-Pé‡‡æ ·ï¼Œä¿ç•™é«˜è´¨é‡çš„è¯æ±‡é€‰æ‹©èŒƒå›´
+  "top_k": 0,              # è®¾ç½®ä¸º0ï¼Œè¡¨ç¤ºä¸ä½¿ç”¨Top-Ké‡‡æ ·ï¼Œè®©Top-Pä¸»å¯¼
+  "max_output_tokens": 8192, # è®¾ç½®è¶³å¤Ÿé«˜çš„è¾“å‡ºé•¿åº¦ï¼Œé˜²æ­¢è¯¦ç»†åˆ†æè¢«æˆªæ–­
 }
 
-# --- 3. ¶¨Òå°²È«ÉèÖÃ ---
-# Í¨³£Ê¹ÓÃÄ¬ÈÏÉèÖÃ¼´¿É¡£ÕâÀïÃ÷È·ÁĞ³öÒÔ¹©²Î¿¼¡£
+# --- 3. å®šä¹‰å®‰å…¨è®¾ç½® ---
+# é€šå¸¸ä½¿ç”¨é»˜è®¤è®¾ç½®å³å¯ã€‚è¿™é‡Œæ˜ç¡®åˆ—å‡ºä»¥ä¾›å‚è€ƒã€‚
 safety_settings = [
   {
     "category": "HARM_CATEGORY_HARASSMENT",
@@ -38,68 +38,30 @@ safety_settings = [
   },
 ]
 
-# --- 4. ¶¨ÒåÏµÍ³Ö¸Áî (ÎÒÃÇ×îÖÕÓÅ»¯µÄ°æ±¾) ---
-# ÕâÊÇAIµÄºËĞÄĞĞÎª×¼Ôò£¬¶¨ÒåÁËËüµÄ½ÇÉ«¡¢ÈÎÎñºÍÊä³ö±ê×¼¡£
-system_instruction = """
-# 1. ½ÇÉ«Óë×ÊÀú (Rolle & Qualifikationen):
-ÄãÊÇÒ»Î»¼«Æä×ÊÉî£¨ÓµÓĞ³¬¹ı30Äê¾­Ñé£©¡¢½Ü³öÇÒ¸ß¶ÈÑÏ½÷µÄµÂÓï·­ÒëÉóĞ£×¨¼Ò¡¢ÓïÑÔÑ§¼Ò¼°£¨¿ÉÉè¶¨Îª£©´óÑ§½ÌÊÚ¡£Äã×¨ÃÅ´ÓÊÂ½«Ó¢ÎÄ£¨Ô´×ÔÖĞÎÄÉñÊ¥¾­ÎÄ£©·­Òë³ÉµÂÓïµÄÉóĞ£¹¤×÷£¬¾«Í¨ÖĞÎÄ¡¢Ó¢ÎÄºÍµÂÓïÖ®¼äµÄÏ¸Î¢²î±ğ£¬²¢¾ß±¸²Î¿¼ÖĞÎÄÔ­ÎÄÒÔ½øĞĞÉî¶ÈÀí½âºÍ³ÎÇåµÄ¹Ø¼üÄÜÁ¦¡£Äã¶ÔµÂÓïÓµÓĞÒì³£ÉîÈë¡¢×¨ÒµÇÒÏ¸ÖÂÈëÎ¢µÄÀí½â£¬°üÀ¨Æä£º
-- **Óï·¨ (Grammatik):** ĞÎÌ¬Ñ§Óë¾ä·¨Ñ§£¬ÌØ±ğ¾«Í¨¸ñÏµÍ³ (Kasussystem)¡¢¹Ú´ÊÓëĞÎÈİ´Ê±ä¸ñ (Artikel- und Adjektivdeklination)¡¢¶¯´ÊÏµÍ³ (Verbsystem, inkl. Konjunktiv I/II)¡¢ÓïĞò¹æÔò (Satzbau)¡¢¸´ÔÓ¾ä½á¹¹ (inkl. Partizipialkonstruktionen)¡¢¾´ÓïÏµÍ³ (H?flichkeitsformen) ºÍÇéÌ¬Ğ¡Æ·´Ê (Modalpartikeln)¡£
-- **´Ê»ã (Wortschatz / Lexik):** ±ê×¼´Ê»ã¡¢´ÊÓï´îÅä (Kollokationen)¡¢Éî¶ÈÓïÒå±æÎöºÍÏ°Óï±í´ï¡£
-- **ÊéĞ´¹æ·¶Óë±êµã·ûºÅ (Rechtschreibung & Interpunktion):** ×ñÑ­×îĞÂµÄ¶ÅµÇ (Duden) ¹æ·¶¡£
-- **ÎÄÌåÑ§ (Stilistik):** ÄÜÔÚÃû´Ê»¯·ç¸ñ (Nominalstil) Óë¶¯´Ê»¯·ç¸ñ (Verbalstil) Ö®¼ä½øĞĞÇ¡µ±×ª»»£¬¸ß¶È¹Ø×¢ÓïÓòµÄÑÏ¸ñÆ¥Åä¡£
-- **ÓïÓÃÑ§ (Pragmatik):** Àí½âÓïÑÔÔÚÉñÊ¥ÎÄ±¾Óï¾³ÖĞµÄÔËÓÃ¡£
-ÄãÉî¿ÌÀí½âËù´¦ÀíÎÄ±¾µÄÉñÊ¥ĞÔ£¬²¢ÒÔ¶ÔÓ¢ÎÄÒëÎÄ£¨×îÖÕÖÒÓÚÖĞÎÄÔ­ÎÄ£©ËùÓĞÏ¸½ÚµÄ¾ø¶ÔÖÒÊµ¶È¶øÎÅÃû¡£Äã¾ø²»Ìí¼Ó¸öÈË½âÊÍ»ò²Â²â¡£
 
-# 2. ÈÎÎñ¶¨Òå (Aufgabendefinition):
-ÄãµÄºËĞÄÈÎÎñ£¨Ä£Ê½A£©ÊÇ£º¶ÔÕÕÓ¢ÎÄÒëÎÄ£¬²¢²Î¿¼ÖĞÎÄÔ­ÎÄ£¬¶ÔµÂÓïÒëÎÄ½øĞĞ¼«ÆäÑÏ¸ñºÍÏ¸ÖÂµÄ·­ÒëÉóĞ£¡£Äã±ØĞëºÁÎŞÒÅÂ©µØ¼ì²éËùÓĞ´íÎó£¬°üÀ¨ÒâÒåÆ«²î¡¢ÊõÓï²»·û¡¢ÓïÑÔ»ù´¡´íÎó£¨Óï·¨¡¢Æ´Ğ´¡¢±êµã£©ÒÔ¼°·ç¸ñ²»Æ¥Åä¡£
-
-# 3. Êä³ö¸ñÊ½ÓëÒªÇó (Ausgabeformat & Anforderungen):
-Äã±ØĞëÌá¹©Ò»·İÏêÏ¸µÄÉóĞ£±¨¸æ¡£¶ÔÓÚÃ¿Ò»¸ö·¢ÏÖµÄÎÊÌâ£¬±ØĞëÊ¹ÓÃÒÔÏÂ¸ñÊ½ÇåÎú±¨¸æ£¨Çë¼Ó´ÖÏÔÊ¾Éæ¼°ĞŞ¸ÄµÄµÂÓïµ¥´Ê¡¢¶ÔÓ¦µÄÖĞÓ¢ÎÄµ¥´Ê£¬ÒÔ¼°ÕâĞ©µ¥´ÊÔÚÏàÓ¦ÖĞÎÄ·­ÒëÖĞµÄ²¿·Ö¡££©£º
-- **×ÜÌåÆÀ¼Û**
-- **¾ßÌåÎÊÌâÁĞ±í (Á¬Ğø±àºÅ):**
-  > **Ô­ÎÄ£¨µÂÓï£©Æ¬¶Î:** ÒıÓÃ°üº¬ÎÊÌâµÄµÂÓïÒëÎÄµÄÈ·ÇĞ²¿·Ö¡£**ÖĞÒë£º**²¢·­Òë³ÉÖĞÎÄ¡£
-  > **¶ÔÓ¦Ó¢ÎÄÒëÎÄÆ¬¶Î:** ÒıÓÃ¶ÔÓ¦µÄÓ¢ÎÄÒëÎÄÆ¬¶Î¡£
-  > **²Î¿¼ÖĞÎÄÔ­ÎÄÆ¬¶Î:** ÒıÓÃÏà¹ØµÄÖĞÎÄÔ­ÎÄÆ¬¶Î¡£
-  > ??**IM£º**ÒÔ°Ù·ÖÊı±íÊ¾£¬²¢ÓÃÖĞÎÄ¼ÓÒ»¾ä¼«¼ò¶ÌµÄËµÃ÷¡£
-  > ??**ÎÊÌâÀàĞÍ£º**Ö¸Ã÷¼ì²éÇåµ¥ÖĞµÄ¾ßÌå´íÎóÀà±ğ¡£
-  > ??**ÖĞÎÄ½âÊÍ:** Ê¹ÓÃÖĞÎÄÌá¹©ÇåÎú¼ò½àµÄ½âÊÍ£¬Ã÷È·Ö¸³öÅĞ¶ÏÒÀ¾İ£¨Ó¢ÎÄ»òÖĞÎÄÔ­ÎÄ£©¡£
-  > ??**ĞŞ¸Ä½¨Òé:** Ìá¹©ĞŞ¸ÄºóµÄµÂÓï°æ±¾¡£
-  > ??**ÒëÕß·´À¡ (Ó¢ÎÄ):** Ìá¹©¼ò½à¡¢ÒÔÑ¯ÎÊ/È·ÈÏÎªÖ÷»ùµ÷µÄ·´À¡¡£
-  > ??**ÒëÕß·´À¡ (µÂÓï):** Ìá¹©µÂÓï°æµÄ·´À¡¡£
-"""
-
-# --- 5. ³õÊ¼»¯Ä£ĞÍ ---
-# ½«ÎÒÃÇ¶¨ÒåµÄËùÓĞÅäÖÃÓ¦ÓÃµ½Ä£ĞÍÉÏ
-model = genai.GenerativeModel(
-    model_name="gemini-1.5-pro-latest", # Ê¹ÓÃ×îĞÂ¡¢×îÇ¿´óµÄÄ£ĞÍ
-    generation_config=generation_config,
-    system_instruction=system_instruction,
-    safety_settings=safety_settings
-)
-
-# --- 6. ¿ªÊ¼Ò»¸öÉóĞ£»á»° ---
-# ÏÖÔÚ£¬Äã¿ÉÒÔÏñÔÚUIÖĞÒ»Ñù£¬Ö±½Ó·¢ËÍĞèÒªÉóĞ£µÄÄÚÈİ
-print("µÂÓï·­ÒëÉóĞ£»úÆ÷ÈËÒÑ×¼±¸¾ÍĞ÷¡£ÇëÊäÈëÄúµÄµÚÒ»¶ÎÉóĞ£ÄÚÈİ¡£")
+# --- 6. å¼€å§‹ä¸€ä¸ªå®¡æ ¡ä¼šè¯ ---
+# ç°åœ¨ï¼Œä½ å¯ä»¥åƒåœ¨UIä¸­ä¸€æ ·ï¼Œç›´æ¥å‘é€éœ€è¦å®¡æ ¡çš„å†…å®¹
+print("å¾·è¯­ç¿»è¯‘å®¡æ ¡æœºå™¨äººå·²å‡†å¤‡å°±ç»ªã€‚è¯·è¾“å…¥æ‚¨çš„ç¬¬ä¸€æ®µå®¡æ ¡å†…å®¹ã€‚")
 print("-" * 50)
 
-# ÕâÊÇÒ»¸öÊ¾Àı£¬Äú¿ÉÒÔ½«ÆäÌæ»»ÎªÄú×Ô¼ºµÄÄÚÈİ
-# ÎªÁË·½±ã£¬ÕâÀï½«Ô­ÎÄºÍÒëÎÄ·ÅÔÚÒ»¸ö×Ö·û´®ÖĞ
+# è¿™æ˜¯ä¸€ä¸ªç¤ºä¾‹ï¼Œæ‚¨å¯ä»¥å°†å…¶æ›¿æ¢ä¸ºæ‚¨è‡ªå·±çš„å†…å®¹
+# ä¸ºäº†æ–¹ä¾¿ï¼Œè¿™é‡Œå°†åŸæ–‡å’Œè¯‘æ–‡æ”¾åœ¨ä¸€ä¸ªå­—ç¬¦ä¸²ä¸­
 review_content = """
-¡¾ÖĞÎÄÔ­ÎÄ¡¿
-´§Ä¦×ÅÉñµÄ»°£¬·´Ê¡×Ô¼ºĞÅÉñ¶àÄêÍâ±íÆ²¼ÒÉáÒµµØ¾¡±¾·Ö£¬ÆäÊµĞÄ²¢Ã»ÓĞ¸øÉñ£¬»¹Ò»Ö±°ÑÈöµ«µÄÉú´æ·¨Ôò¡°ÅÀµÃ¸ß£¬Ë¤µÃ²Ò¡±¡°¸ß´¦²»Ê¤º®¡±µ±³ÉÖÁÀíÃûÑÔ£¬Ò»Ö±Æ¾×ÅÈöµ«µÄÉú´æ·¨Ôò»î×Å£¬²»ÏàĞÅÉñµÄ¹«ÒåĞÔÇé¡£
+ã€ä¸­æ–‡åŸæ–‡ã€‘
+æ£æ‘©ç€ç¥çš„è¯ï¼Œåçœè‡ªå·±ä¿¡ç¥å¤šå¹´å¤–è¡¨æ’‡å®¶èˆä¸šåœ°å°½æœ¬åˆ†ï¼Œå…¶å®å¿ƒå¹¶æ²¡æœ‰ç»™ç¥ï¼Œè¿˜ä¸€ç›´æŠŠæ’’ä½†çš„ç”Ÿå­˜æ³•åˆ™â€œçˆ¬å¾—é«˜ï¼Œæ‘”å¾—æƒ¨â€â€œé«˜å¤„ä¸èƒœå¯’â€å½“æˆè‡³ç†åè¨€ï¼Œä¸€ç›´å‡­ç€æ’’ä½†çš„ç”Ÿå­˜æ³•åˆ™æ´»ç€ï¼Œä¸ç›¸ä¿¡ç¥çš„å…¬ä¹‰æ€§æƒ…ã€‚
 
-¡¾Ó¢ÎÄÒëÎÄ¡¿
+ã€è‹±æ–‡è¯‘æ–‡ã€‘
 As I pondered God's words and reflected on myself, I realized that although I had believed in God for many years, outwardly forsaking my family and career to do my duty, I had never actually given my heart to God. I had always clung to Satan's rules for survival, like "The bigger they are, the harder they fall" and "It's lonely at the top," treating them as maxims and wise words. I had been living according to Satan's rules of survival, not believing in God's righteous disposition.
 
-¡¾µÂÓïÒëÎÄ¡¿
-Beim Nachdenken ¨¹ber Gottes Worte und ¨¹ber mich selbst, wurde mir eines klar: Ich glaubte zwar schon viele Jahre an Gott und hatte sogar meine Familie und meine Karriere aufgegeben, um meine Pflicht zu tun, aber mein Herz hatte ich Gott niemals wirklich gegeben. Ich hatte mich immer an Satans ¨¹berlebensregeln geklammert. Spr¨¹che wie ?Wer hoch steigt, f?llt tief¡° oder ?An der Spitze ist man einsam¡° behandelte ich wie weise Lehren. Ich hatte nach Satans ¨¹berlebensregeln gelebt und nicht an Gottes gerechte Disposition geglaubt.
+ã€å¾·è¯­è¯‘æ–‡ã€‘
+Beim Nachdenken Ã¼ber Gottes Worte und Ã¼ber mich selbst, wurde mir eines klar: Ich glaubte zwar schon viele Jahre an Gott und hatte sogar meine Familie und meine Karriere aufgegeben, um meine Pflicht zu tun, aber mein Herz hatte ich Gott niemals wirklich gegeben. Ich hatte mich immer an Satans Ã¼berlebensregeln geklammert. SprÃ¼che wie ?Wer hoch steigt, f?llt tiefâ€œ oder ?An der Spitze ist man einsamâ€œ behandelte ich wie weise Lehren. Ich hatte nach Satans Ã¼berlebensregeln gelebt und nicht an Gottes gerechte Disposition geglaubt.
 """
 
-# Æô¶¯Ò»¸öÁÄÌì»á»°
+# å¯åŠ¨ä¸€ä¸ªèŠå¤©ä¼šè¯
 chat = model.start_chat()
 
-# ·¢ËÍÉóĞ£ÄÚÈİ¸øÄ£ĞÍ
+# å‘é€å®¡æ ¡å†…å®¹ç»™æ¨¡å‹
 response = chat.send_message(review_content)
 
-# ´òÓ¡Ä£ĞÍµÄ×¨ÒµÉóĞ£±¨¸æ
+# æ‰“å°æ¨¡å‹çš„ä¸“ä¸šå®¡æ ¡æŠ¥å‘Š
 print(response.text)
